@@ -1,10 +1,10 @@
 // src/utils/trpc.ts
-import type { AppRouter } from "../server/router";
+import type { AppRouter, appRouter } from "../server/router";
+import { inferProcedureOutput } from "@trpc/server";
 import { createReactQueryHooks } from "@trpc/react";
 
 export const trpc = createReactQueryHooks<AppRouter>();
 
-/**
- * Check out tRPC docs for Inference Helpers
- * https://trpc.io/docs/infer-types#inference-helpers
- */
+export type inferQueryResponse<
+  TRouteKey extends keyof AppRouter["_def"]["queries"]
+> = inferProcedureOutput<AppRouter["_def"]["queries"][TRouteKey]>;
