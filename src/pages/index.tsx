@@ -4,6 +4,7 @@ import { useState } from "react";
 import type React from "react";
 import Head from "next/head";
 import { inferQueryResponse, trpc } from "../utils/trpc";
+import Image from "next/image";
 
 const btn =
   "inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm font-medium rounded-full text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500";
@@ -21,9 +22,16 @@ const Home: NextPage = () => {
     { id: second },
   ]);
 
+  const voteMutation = trpc.useMutation(["pokemon.cast-vote"]);
+
   if (firstPokemon.isLoading || secondPokemon.isLoading) return null;
 
   const voteForRoundest = (selected: number) => {
+    if (selected === first) {
+      voteMutation.mutate({ votedFor: first, votedAgainst: second });
+    } else {
+      voteMutation.mutate({ votedFor: second, votedAgainst: first });
+    }
     updateIds(getOptionsForVote());
   };
 
@@ -69,10 +77,13 @@ const PokemonListing: React.FC<{
 }> = (props) => {
   return (
     <div className=" flex flex-col items-center">
-      <img src={props.pokemon.sprites.front_default} className="w-64 h-64" />
-      <div className="text-xl text-center capitalize mt-[-2rem]">
-        {props.pokemon.name}
-      </div>
+      <Image
+        src={props.pokemon.sprites.front_default}
+        width={256}
+        height={256}
+        layout="fixed"
+      />
+      <div className="text-xl text-center capitalize">{props.pokemon.name}</div>
       <button onClick={() => props.vote()} className={btn}>
         Rounder
       </button>
