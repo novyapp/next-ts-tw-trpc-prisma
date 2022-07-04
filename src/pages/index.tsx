@@ -72,14 +72,8 @@ export default function Home() {
       )}
       {!pokemonPair && <img src="/rings.svg" className="w-48" />}
       <div className="w-full text-xl text-center pb-2">
-        <a href="https://twitter.com/t3dotgg">Twitter</a>
-        <span className="p-4">{"-"}</span>
         <Link href="/results">
           <a>Results</a>
-        </Link>
-        <span className="p-4">{"-"}</span>
-        <Link href="/about">
-          <a>About</a>
         </Link>
       </div>
     </div>
