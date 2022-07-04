@@ -1,15 +1,21 @@
 import { createRouter } from "./context";
+import { getOptionsForVote } from "@/utils/getRandomPokemon";
+import { prisma } from "../db/client";
 import { z } from "zod";
 
 export const pokemonRouter = createRouter()
-  .query("get-pokemon-by-id", {
-    input: z.object({
-      id: z.number(),
-    }),
-    async resolve({ input }) {
-      const pokemon = prisma?.pokemon.findFirst({ where: { id: input.id } });
-      if (!pokemon) throw new Error("doesnt exist");
-      return pokemon;
+  .query("get-pokemon-pair", {
+    async resolve() {
+      const [first, second] = getOptionsForVote();
+
+      const bothPokemon = await prisma.pokemon.findMany({
+        where: { id: { in: [first!, second!] } },
+      });
+
+      if (bothPokemon.length !== 2)
+        throw new Error("Failed to find two pokemon");
+
+      return { firstPokemon: bothPokemon[0], secondPokemon: bothPokemon[1] };
     },
   })
   .mutation("cast-vote", {
@@ -18,7 +24,7 @@ export const pokemonRouter = createRouter()
       votedAgainst: z.number(),
     }),
     async resolve({ input }) {
-      const voteInDb = await prisma?.vote.create({
+      const voteInDb = await prisma.vote.create({
         data: {
           votedAgainstId: input.votedAgainst,
           votedForId: input.votedFor,
