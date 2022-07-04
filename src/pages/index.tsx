@@ -6,7 +6,6 @@ import Head from "next/head";
 import { inferQueryResponse, trpc } from "../utils/trpc";
 import Image from "next/image";
 import Link from "next/link";
-import { usePlausible } from "next-plausible";
 
 const btn =
   "inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm font-medium rounded-full text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500";
@@ -23,7 +22,6 @@ export default function Home() {
   });
 
   const voteMutation = trpc.useMutation(["pokemon.cast-vote"]);
-  const plausible = usePlausible();
 
   const voteForRoundest = (selected: number) => {
     if (!pokemonPair) return; // Early escape to make Typescript happy
@@ -41,8 +39,6 @@ export default function Home() {
         votedAgainst: pokemonPair.firstPokemon!.id,
       });
     }
-
-    plausible("cast-vote");
     refetch();
   };
 
