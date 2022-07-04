@@ -6,9 +6,9 @@ generator client {
 }
 
 datasource db {
-    provider = "sqlite"
-    url      = "file:./db.sqlite"
-    // url      = env("DATABASE_URL")
+    provider = "postgres"
+    //url      = "file:./db.sqlite"
+    url      = env("DATABASE_URL")
 }
 
 model Example {
@@ -61,9 +61,21 @@ model VerificationToken {
 }
 
 model Vote {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
+    id             String   @id @default(cuid())
+    createdAt      DateTime @default(now())
+    votedFor       Pokemon  @relation(name: "votesFor", fields: [votedForId], references: [id])
+    votedForId     Int
+    votedAgainst   Pokemon  @relation(name: "votesAgainst", fields: [votedAgainstId], references: [id])
+    votedAgainstId Int
 
-    votedFor     Int
-    votedAgainst Int
+    @@index([votedForId])
+    @@index([votedAgainstId])
+}
+
+model Pokemon {
+    id          Int    @id
+    name        String
+    spriteUrl   String
+    VoteFor     Vote[] @relation("votesFor")
+    VoteAgainst Vote[] @relation("votesAgainst")
 }
